@@ -104,6 +104,7 @@ class Rover(cocos.sprite.Sprite):
 
 class RoverMove(cocos.actions.Move):
     def step(self, dt):
+        global win
         rover = self.target
         if rover.dead:
             return
@@ -177,11 +178,9 @@ class RoverMove(cocos.actions.Move):
 class PlayerMove(cocos.actions.Move):
     def step(self, dt):
         global win
-        print(win)
         super(PlayerMove, self).step(dt)
         plyr = self.target
         if win:
-            print("win is true")
             if plyr.x >= 600: plyr.stateMoving = 1
             if plyr.stateMoving == 1:
                 plyr.velocity = (-600, 0)
@@ -221,7 +220,7 @@ class BulletMove(cocos.actions.Move):
         for alien in aliens:
             if not alien.dead:
                 numaliens += 1
-        if numaliens == 0 and alienlayer.wave == 1:
+        if numaliens == 0 and alienlayer.wave <= 4:
             alienlayer.newwave(alienlayer.wave * 5 + 5)
         self.target.velocity = (750, 0)
 
@@ -450,7 +449,6 @@ class PlayerLayer(cocos.layer.ScrollableLayer):
     
     def on_key_press(self, symbol, modifiers):
         global lastbullettime
-        print("keypress")
         if symbol == key.SPACE:
             timern = time.time()
             if timern - lastbullettime < .28:
@@ -489,7 +487,7 @@ class AlienLayer(cocos.layer.Layer):
     def newwave(self, numaliens):
         for alien in aliens:
             alien.image = pyglet.resource.image("nothing.png")
-        if self.wave >= 1:
+        if self.wave >= 4:
             clock.schedule_once(self.you_win, 3)
             self.wave += 1
             return
@@ -566,4 +564,4 @@ director.init(caption="GALAXY HOPPER!", width=1000, height=600)
 keyboard = key.KeyStateHandler()
 cocos.director.director.window.push_handlers(keyboard)
 
-director.run(Scene(Level2Instructions()))
+director.run(Scene(Menu()))
