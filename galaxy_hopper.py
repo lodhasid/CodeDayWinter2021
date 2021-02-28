@@ -181,6 +181,7 @@ class PlayerMove(cocos.actions.Move):
         super(PlayerMove, self).step(dt)
         plyr = self.target
         if win:
+            print("win is true")
             if plyr.x >= 600: plyr.stateMoving = 1
             if plyr.stateMoving == 1:
                 plyr.velocity = (-600, 0)
@@ -220,7 +221,7 @@ class BulletMove(cocos.actions.Move):
         for alien in aliens:
             if not alien.dead:
                 numaliens += 1
-        if numaliens == 0:
+        if numaliens == 0 and alienlayer.wave == 1:
             alienlayer.newwave(alienlayer.wave * 5 + 5)
         self.target.velocity = (750, 0)
 
@@ -490,6 +491,7 @@ class AlienLayer(cocos.layer.Layer):
             alien.image = pyglet.resource.image("nothing.png")
         if self.wave >= 1:
             clock.schedule_once(self.you_win, 3)
+            self.wave += 1
             return
         self.wave += 1
         for x in range(numaliens):
@@ -509,7 +511,6 @@ class AlienLayer(cocos.layer.Layer):
         clock.schedule_once(self.endGame, 3)
     
     def endGame(self, dt):
-        print("hihi")
         director.replace(Scene(YouWin()))
 
 
